@@ -41,6 +41,63 @@ export const setupMCPServer = (): McpServer => {
     }
   );
 
+  server.tool(
+    "reverse-text",
+    "Reverses a given string",
+    {
+      text: z.string().describe("The text to reverse"),
+    },
+    async ({ text }): Promise<CallToolResult> => {
+      const reversed = text.split("").reverse().join("");
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Reversed text: ${reversed}`,
+          },
+        ],
+      };
+    }
+  );
+
+  server.tool(
+    "generate-random-number",
+    "Generates a random number between min and max",
+    {
+      min: z.number().default(0),
+      max: z.number().default(100),
+    },
+    async ({ min, max }): Promise<CallToolResult> => {
+      const rand = Math.floor(Math.random() * (max - min + 1)) + min;
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Generated random number: ${rand}`,
+          },
+        ],
+      };
+    }
+  );
+
+  server.tool(
+    "echo-json",
+    "Returns the exact input JSON for testing serialization",
+    {
+      input: z.record(z.any()).describe("JSON object to echo back"),
+    },
+    async ({ input }): Promise<CallToolResult> => {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Echoed JSON: ${JSON.stringify(input, null, 2)}`,
+          },
+        ],
+      };
+    }
+  );
+
   // Register a tool specifically for testing the ability
   // to resume notification streams to the client
   server.tool(
